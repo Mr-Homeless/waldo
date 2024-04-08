@@ -8,7 +8,7 @@
     "seed": "esno prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^4.13.0",
+    "@prisma/client": "^5.12.1",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*"
   },
