@@ -24,6 +24,9 @@ Sentry.init({
   // sessions when an error occurs.
   replaysOnErrorSampleRate: 1.0,
 
+  // set as same route in sentry next config
+  tunnel: '/api/errors',
+
   // ...
   // Note: if you want to override the automatic release value, do not set a
   // `release` value here - use the environment variable `SENTRY_RELEASE`, so
@@ -43,7 +46,7 @@ Sentry.init({
     // auto intramentation for browser
     new Sentry.BrowserTracing(),
     // enabled session replay
-    new Sentry.Replay({}),
+    new Sentry.Replay(),
     // collect extra error data
     new ExtraErrorData({
       // Limit of how deep the object serializer should go. Anything deeper than limit will
