@@ -1,0 +1,28 @@
+name: Pylint
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.11]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Conda environment with Python ${{ matrix.python-version }}
+      uses: s-weigand/setup-conda@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+        conda-channels: 'conda-forge'
+    - name: Install dependencies
+      run: |
+        conda env update --file environment.yml
+    - name: Activate conda environment
+      run: |
+        conda init bash
+        source /home/runner/.bashrc
+        conda activate waldo-dev-env
+    - name: Analyze the code with pylint
+      run: |
+        pylint $(git ls-files '*.py')

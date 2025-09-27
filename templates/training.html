@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Training Model - WALD01</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      #log-output {
+        height: 500px;
+        overflow-y: auto;
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 5px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+      .progress {
+        height: 30px;
+      }
+      .spinner-border {
+        width: 1rem;
+        height: 1rem;
+      }
+      #status-message {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mt-5">Training Model</h1>
+
+      <div class="card mt-4">
+        <div class="card-body">
+          <div id="status-message">
+            <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
+            Initializing training process...
+          </div>
+
+          <div class="progress mb-3" style="display: none;" id="progress-container">
+            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                 id="progress-bar"
+                 role="progressbar"
+                 style="width: 0%">0%</div>
+          </div>
+
+          <div id="log-output">Waiting for training to start...</div>
+
+          <div class="mt-3">
+            <button class="btn btn-secondary" onclick="window.location.href='/'">
+              Back to Home
+            </button>
+            <button class="btn btn-danger ms-2" id="stop-button" style="display: none;">
+              Stop Training
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const processId = '{{ process_id }}';
+      let eventSource = null;
+      let isComplete = false;
+
+      function formatLog(message) {
+        // Convert HTML breaks to newlines for better display
+        return message.replace(/<br>/gi, '\n').replace(/<\/?b>/gi, '');
+      }
+
+      function appendLog(message) {
+        const logOutput = document.getElementById('log-output');
+        if (logOutput.textContent === 'Waiting for training to start...') {
+          logOutput.innerHTML = '';
+        }
+
+        // Parse HTML tags for formatting
+        const formattedMessage = message
+          .replace(/<b>/g, '<span style="color: #4CAF50; font-weight: bold;">')
+          .replace(/<\/b>/g, '</span>')
+          .replace(/<br>/g, '\n');
+
+        const span = document.createElement('span');
+        span.innerHTML = formattedMessage;
+        logOutput.appendChild(span);
+
+        // Auto-scroll to bottom
+        logOutput.scrollTop = logOutput.scrollHeight;
+      }
+
+      function updateStatus(message) {
+        const statusDiv = document.getElementById('status-message');
+        statusDiv.innerHTML = `<span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span> ${message}`;
+      }
+
+      function completeTraining(success = true) {
+        isComplete = true;
+        const statusDiv = document.getElementById('status-message');
+        if (success) {
+          statusDiv.innerHTML = '<span class="text-success">✓ Training Complete!</span>';
+        } else {
+          statusDiv.innerHTML = '<span class="text-danger">✗ Training Failed</span>';
+        }
+
+        // Hide progress bar
+        document.getElementById('progress-container').style.display = 'none';
+        document.getElementById('stop-button').style.display = 'none';
+      }
+
+      function startStreaming() {
+        eventSource = new EventSource('/stream-training/' + processId);
+
+        eventSource.onmessage = function(event) {
+          const message = event.data;
+
+          if (message === 'PROCESS_COMPLETE') {
+            completeTraining(true);
+            eventSource.close();
+            return;
+          }
+
+          // Update status based on content
+          if (message.includes('Starting preprocessing')) {
+            updateStatus('Preprocessing clips for training...');
+            document.getElementById('progress-container').style.display = 'block';
+          } else if (message.includes('Processing clip')) {
+            // Extract progress from "Processing clip X/Y"
+            const match = message.match(/Processing clip (\d+)\/(\d+)/);
+            if (match) {
+              const current = parseInt(match[1]);
+              const total = parseInt(match[2]);
+              const percent = Math.round((current / total) * 100);
+              const progressBar = document.getElementById('progress-bar');
+              progressBar.style.width = percent + '%';
+              progressBar.textContent = percent + '%';
+            }
+          } else if (message.includes('Starting model training')) {
+            updateStatus('Training model... This may take a while...');
+            document.getElementById('progress-container').style.display = 'none';
+            document.getElementById('stop-button').style.display = 'inline-block';
+          } else if (message.includes('epoch')) {
+            // Try to extract epoch progress
+            const match = message.match(/epoch[:\s]+(\d+)/i);
+            if (match) {
+              updateStatus(`Training model... Epoch ${match[1]}`);
+            }
+          }
+
+          appendLog(message);
+        };
+
+        eventSource.onerror = function(error) {
+          if (!isComplete) {
+            appendLog('\n<b>Error: Connection to server lost.</b>\n');
+            completeTraining(false);
+          }
+          if (eventSource) {
+            eventSource.close();
+          }
+        };
+      }
+
+      // Start streaming when page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        startStreaming();
+      });
+
+      // Stop button functionality
+      document.getElementById('stop-button').addEventListener('click', function() {
+        if (confirm('Are you sure you want to stop training?')) {
+          if (eventSource) {
+            eventSource.close();
+          }
+          appendLog('\n<b>Training stopped by user.</b>\n');
+          completeTraining(false);
+        }
+      });
+    </script>
+  </body>
+</html>

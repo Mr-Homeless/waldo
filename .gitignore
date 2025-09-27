@@ -1,0 +1,11 @@
+# Keep only essential ignores for system files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

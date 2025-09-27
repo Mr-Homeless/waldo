@@ -1,0 +1,52 @@
+name: cs2-detect-env
+channels:
+  - conda-forge
+  - defaults
+  - pytorch
+dependencies:
+  - python=3.9
+  # Core ML packages with exact versions from working system
+  - pytorch=2.5.1=*cuda*
+  - torchvision=0.20.1=*cuda*
+  - torchaudio=2.5.1=*cuda*
+  - timm=0.4.12
+  - einops=0.8.1
+  - triton=3.1.0
+
+  # Video/Audio processing - critical versions
+  - ffmpeg=6.1.1
+  - opencv=4.10.0
+  - av=12.3.0
+  - librosa=0.11.0
+
+  # Web framework
+  - flask=3.1.0
+  - werkzeug
+
+  # Data science core
+  - numpy=1.26.4
+  - pandas=2.3.1
+  - scipy=1.13.1
+  - matplotlib=3.9.2
+  - pillow=11.3.0
+  - scikit-learn
+
+  # ML training tools
+  - deepspeed=0.17.4
+
+  # Utilities
+  - requests
+  - validators
+  - pylint
+  - pytube
+  - absl-py=2.1.0
+  - grpcio=1.71.0
+  - defaults::libabseil=20250127.0=cxx17_h6a678d5_0
+  - pip
+
+  - pip:
+    - decord
+    - soundfile
+    - tensorboard==2.9.0
+    - tensorboardX==2.6.2
+    - protobuf==3.20.3

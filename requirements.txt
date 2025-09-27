@@ -1,0 +1,40 @@
+# CS2 Cheat Detection System Requirements
+# Web Framework
+Flask==2.3.3
+Werkzeug==2.3.7
+
+# Computer Vision and Video Processing
+opencv-python==4.9.0.80
+av==12.3.0
+
+# Machine Learning and Data Science
+torch>=1.8.0
+torchvision>=0.9.0
+torchaudio>=0.8.0
+numpy>=1.21.0
+pandas>=1.3.0
+scipy>=1.7.0
+Pillow>=8.3.0
+matplotlib>=3.4.0
+
+# Deep Learning Utilities
+timm==0.4.12
+einops>=0.4.0
+
+# Logging and Monitoring
+tensorboard==2.9.0
+tensorboardX==2.6.2
+
+# Data Processing
+decord>=0.6.0
+
+# CUDA acceleration (optional but recommended for GPU)
+# Uncomment the next line if you have NVIDIA GPU with CUDA
+# triton>=2.0.0
+
+# System utilities
+protobuf==3.20.3
+
+# Additional utilities
+tqdm>=4.62.0
+scikit-learn>=1.0.0

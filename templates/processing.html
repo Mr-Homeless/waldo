@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Processing... - WALD01</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #log-container {
+            background-color: #212529;
+            color: #f8f9fa;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            height: 50vh;
+            overflow-y: scroll;
+            border-radius: 5px;
+            padding: 15px;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+        }
+        
+        .progress {
+            height: 30px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease-in-out;
+        }
+        
+        .status-text {
+            margin-top: 10px;
+            font-weight: 500;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Processing Video...</h1>
+        <p class="lead">Please wait while the video is being processed. You can see the real-time progress below.</p>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                     role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    0%
+                </div>
+            </div>
+            <div id="status-text" class="status-text">Initializing...</div>
+        </div>
+        
+        <div id="log-container"></div>
+
+        <div class="mt-3">
+            <a href="/" id="back-button" class="btn btn-secondary" style="display: none;">Back to Main Page</a>
+            <button id="cancel-button" class="btn btn-danger">Cancel Process</button>
+        </div>
+    </div>
+
+    <script>
+        const logContainer = document.getElementById('log-container');
+        const backButton = document.getElementById('back-button');
+        const cancelButton = document.getElementById('cancel-button');
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
+        const processId = "{{ process_id }}";
+
+        function updateProgress(percentage, status) {
+            progressBar.style.width = percentage + '%';
+            progressBar.setAttribute('aria-valuenow', percentage);
+            progressBar.innerText = percentage + '%';
+            
+            if (status) {
+                statusText.innerText = status;
+            }
+            
+            // Change color based on progress
+            if (percentage < 30) {
+                progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-danger';
+            } else if (percentage < 60) {
+                progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+            } else if (percentage < 100) {
+                progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-info';
+            } else {
+                progressBar.className = 'progress-bar bg-success';
+            }
+        }
+
+        function appendLog(message) {
+            // Check if message contains progress information
+            const progressMatch = message.match(/^PROGRESS:(\d+):(.*)$/);
+            
+            if (progressMatch) {
+                const percentage = parseInt(progressMatch[1]);
+                const statusMsg = progressMatch[2];
+                updateProgress(percentage, statusMsg);
+                
+                // Still show the status message in the log (without PROGRESS prefix)
+                logContainer.innerHTML += statusMsg + '<br>';
+            } else {
+                logContainer.innerHTML += message + '<br>';
+            }
+            
+            logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll
+        }
+
+        appendLog('Connecting to server for logs...');
+
+        const eventSource = new EventSource(`/stream-logs/${processId}`);
+
+        eventSource.onmessage = function(event) {
+            if (event.data === "PROCESS_COMPLETE") {
+                updateProgress(100, 'Process Complete!');
+                appendLog('\n\n--- \n**Process finished!** You can now return to the main page.');
+                eventSource.close();
+                backButton.style.display = 'block';
+                cancelButton.style.display = 'none';
+            } else {
+                appendLog(event.data);
+            }
+        };
+
+        eventSource.onerror = function(err) {
+            appendLog('\n\n--- \n**Error connecting to the server.** Please check the console and try again.');
+            console.error("EventSource failed:", err);
+            eventSource.close();
+            backButton.style.display = 'block';
+            cancelButton.style.display = 'none';
+            updateProgress(0, 'Error occurred');
+        };
+
+        cancelButton.addEventListener('click', () => {
+            appendLog('\n\n--- \n**Cancelling process...**');
+            fetch(`/cancel/${processId}`, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => {
+                    appendLog(data);
+                    cancelButton.disabled = true;
+                    updateProgress(0, 'Process cancelled');
+                })
+                .catch(error => {
+                    appendLog('Error cancelling process: ' + error);
+                });
+        });
+    </script>
+</body>
+</html>
