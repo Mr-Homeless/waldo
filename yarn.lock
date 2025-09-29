@@ -10815,14 +10815,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-plausible@npm:^3.7.2":
-  version: 3.7.2
-  resolution: "next-plausible@npm:3.7.2"
+"next-plausible@npm:^3.12.4":
+  version: 3.12.4
+  resolution: "next-plausible@npm:3.12.4"
   peerDependencies:
-    next: ^11.1.0 || ^12.0.0 || ^13.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 5a574802a948fc08ede3e4252884f687c3b23056e29aef265b68a8aaff05f20d519beea1a48f6aece6da2eef50269d37c64328d93d28d2156c7c0b08be5ec2d5
+    next: "^11.1.0 || ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 "
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: f8ae32eae3b8f4f45e1bdf1ab1aaf6be9ff184468c90253f4920a0cca01b426610c7ac85d082970e614f6f05b3679b9e68aae13ee5081a3d5bd003baaf11005a
   languageName: node
   linkType: hard
 
@@ -14236,7 +14236,7 @@ __metadata:
     framer-motion: ^10.12.4
     next: 13.2.4
     next-auth: ^4.22.1
-    next-plausible: ^3.7.2
+    next-plausible: ^3.12.4
     react: 18.2.0
     react-dom: 18.2.0
     react-icons: ^4.8.0
