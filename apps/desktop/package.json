@@ -22,7 +22,7 @@
     "typescript": "5.0.4"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.2.3",
+    "@tauri-apps/cli": "^2.8.4",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*"
   }
