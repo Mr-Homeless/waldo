@@ -28,7 +28,7 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.17",
     "@types/mime": "^3.0.1",
-    "@types/node": "^18.16.0",
+    "@types/node": "^24.5.2",
     "@types/uuid": "^9.0.1",
     "eslint-config-custom": "*",
     "ts-node-dev": "^2.0.0",
