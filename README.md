@@ -28,7 +28,7 @@ This system uses cutting-edge Vision Transformer deep learning technology to ana
     Once the terminal auto-closes, reboot your PC and run wsl-install.bat as admin again and follow the prompts to set up a username and password. 
 
 3. **Run wsl-setup.bat NOT as admin** 
-    Double click wsl-setup.bat to run it without elevated privilages. This will auto-install the conda enviornment and all the requirements within the new WSL you just made. 
+    Double click wsl-setup.bat to run it without elevated privilages. This will auto-install the conda environment and all the requirements within the new WSL you just made. 
 
 
 ### Step 2: Prepare model for training/inferencing
@@ -38,7 +38,7 @@ This system uses cutting-edge Vision Transformer deep learning technology to ana
 
 2. **Place the model**
 
-    Place this .pth file in the "deepcheat" folder found in the extracted project files. Replace the 1kb placeholder file
+    Place this .pth file in the "deepcheat/VideoMAEv2" folder found in the extracted project files. Paste any other downloaded models in "deepcheat/VideoMAEv2/output" for inferencing or fine tuning. 
 
 3. **You're ready to train a model and analyze CS2 clips!**
 
@@ -57,15 +57,15 @@ This system uses cutting-edge Vision Transformer deep learning technology to ana
 ## 🚀 Quick Start Guide (Linux)
 
 
-1. **Paste this** in your terminal - will test on Linux Mint for release
+1. **Paste this** in your terminal - Script isn't currently tested. If it doesn't work, make install.sh executable and run it. Then do the same for run.sh
 
 ```bash
 echo "🚀 Starting Waldo installation..."
 
 # Clone the repository
 echo "📥 Downloading project from GitHub..."
-git clone https://github.com/Mr-Homeless/waldo-private.git
-cd waldo-private
+git clone hhttps://github.com/waldo-vision/waldo.git
+cd waldo
 
 # Make install.sh executable and run it
 echo "🔧 Installing dependencies..."
@@ -88,7 +88,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     chmod +x run.sh
     ./run.sh
 else
-    echo "To start the server later, run: cd waldo-private && ./run.sh"
+    echo "To start the server later, run: cd waldo&& ./run.sh"
 fi
 ```
 
