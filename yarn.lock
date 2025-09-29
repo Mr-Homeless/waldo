@@ -3491,24 +3491,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:^4.13.0":
-  version: 4.13.0
-  resolution: "@prisma/client@npm:4.13.0"
-  dependencies:
-    "@prisma/engines-version": 4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a
+"@prisma/client@npm:^6.16.2":
+  version: 6.16.2
+  resolution: "@prisma/client@npm:6.16.2"
   peerDependencies:
     prisma: "*"
+    typescript: ">=5.1.0"
   peerDependenciesMeta:
     prisma:
       optional: true
-  checksum: 74e2ede6308d6f70dc6244c34d13cf5f6c8da4f1a1ffe42a26192675ecac02733cb5482518d2a37fa057f160873fe8d42f5e3a08fc45d52b1eb386522bdbec0b
-  languageName: node
-  linkType: hard
-
-"@prisma/engines-version@npm:4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a":
-  version: 4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a
-  resolution: "@prisma/engines-version@npm:4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a"
-  checksum: cc583fe956b65fd4548082917f14ccf1c3c54d6b26623583f5e63298a8b4b5a492ba90597123af1fc272115621cb7340e2d708d5b5e252f59139b35f0df00abe
+    typescript:
+      optional: true
+  checksum: 57e86bc06fdd32614459701123b129fb513390569054121419e9e1dd65f85ee52f1684c6ac896ca743e1c9b6f0f498808de637ab1d2ef3d1ce59b0edab3fe578
   languageName: node
   linkType: hard
 
@@ -6160,7 +6154,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "database@workspace:packages/database"
   dependencies:
-    "@prisma/client": ^4.13.0
+    "@prisma/client": ^6.16.2
     eslint-config-custom: "workspace:*"
     esno: ^0.16.3
     prisma: ^4.13.0
