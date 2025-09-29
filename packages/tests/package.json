@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "jest": "^29.5.0",
-    "ts-jest": "^29.1.0",
+    "ts-jest": "^29.4.4",
     "web": "workspace:*"
   },
   "devDependencies": {
