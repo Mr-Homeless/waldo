@@ -1,0 +1,15 @@
+{
+  "version": "0.1",
+  "type": "container",
+  "ops": [
+    {
+      "type": "container/run",
+      "id": "waldo",
+      "args": {
+        "image": "docker.io/matthammond962/waldo:v1.0.0-alpha",
+        "gpu": true,
+        "expose": 5000
+      }
+    }
+  ]
+}
