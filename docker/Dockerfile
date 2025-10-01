@@ -20,7 +20,7 @@ RUN pip install --no-cache-dir numpy==1.26.4 && \
     pip install opencv-python-headless==4.9.0.80
 
 # Conditionally download model
-RUN if [ "$NO_MODEL" != "true" ]; then \
+RUN if [ "$NO_MODEL" != "false" ]; then \
         pip install huggingface_hub && \
         hf download jinggu/jing-model vit_g_ps14_ak_ft_ckpt_7_clean.pth --local-dir /workspace/deepcheat/VideoMAEv2; \
     fi
