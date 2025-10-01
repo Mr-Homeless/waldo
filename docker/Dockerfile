@@ -17,7 +17,7 @@ COPY . .
 RUN pip install --no-cache-dir numpy==1.26.4 && \
     pip install --no-cache-dir -r requirements.txt && \
     pip uninstall -y opencv-python opencv-python-headless && \
-    pip install opencv-python-headless==4.9.0.80 && \
+    pip install opencv-python-headless==4.9.0.80
 
 # Conditionally download model
 RUN if [ "$NO_MODEL" != "true" ]; then \
