@@ -64,7 +64,7 @@ echo "🚀 Starting Waldo installation..."
 
 # Clone the repository
 echo "📥 Downloading project from GitHub..."
-git clone hhttps://github.com/Mr-Homeless/waldo.git
+git clone https://github.com/Mr-Homeless/waldo.git
 cd waldo
 
 # Make install.sh executable and run it
