@@ -1,7 +1,7 @@
 # CS2 Cheat Detection System Requirements
 # Web Framework
 Flask==2.3.3
-Werkzeug==2.3.7
+Werkzeug==3.0.6
 
 # Computer Vision and Video Processing
 opencv-python==4.9.0.80
