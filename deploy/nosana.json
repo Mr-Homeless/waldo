@@ -10,19 +10,19 @@
         "gpu": true,
         "expose": 5000,
         "env": {
-          "MODEL_PATH": "/root/model"
-        }
-      },
-      "resources": [
-        {
-          "type": "HF",
-          "repo": "jinggu/jing-model",
-          "files": [
-            "vit_g_ps14_ak_ft_ckpt_7_clean.pth"
-          ],
-          "target": "/root/model"
-        }
-      ]
+          "MODEL_PATH": "/model"
+        },
+        "resources": [
+          {
+            "type": "HF",
+            "repo": "jinggu/jing-model",
+            "files": [
+              "vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+            ],
+            "target": "/model"
+          }
+        ]
+      }
     }
   ]
 }
