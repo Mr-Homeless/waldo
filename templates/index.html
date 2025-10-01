@@ -4,133 +4,130 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>WALD01 - CS2 Cheat Detection</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <div class="container">
-      <h1 class="mt-5">WALD01 - CS2 Cheat Detection</h1>
-      <p class="lead">A simple interface for training and using the CS2 cheat detection model.</p>
-
-      <div class="text-center mt-3 mb-4">
-        <a href="/saved-evaluations" class="btn btn-secondary">
-          📂 View Saved Evaluation Results
-        </a>
-      </div>
-
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <div class="alert alert-info" role="alert">
-            {% for message in messages %}
-              {{ message }}<br>
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endwith %}
-
-      <!-- Auto-Edit Section -->
-      <div id="autoedit-section" class="mt-5 card">
-        <div class="card-body">
-          <h2 class="card-title">1. Process Raw Footage</h2>
-          <p class="text-muted">Upload a CS2 gameplay video to automatically extract 2-second clips around detected kills.</p>
-          
-          
-          <form id="process-form" action="/process" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-              <label for="videoFile" class="form-label">Select a raw video file to process:</label>
-              <input type="file" class="form-control" id="videoFile" name="videoFile" accept=".mp4,.mov,.avi" required>
-              <div class="form-text">Choose your CS2 gameplay recording with clear audio.</div>
-            </div>
-            <button id="process-button" type="submit" class="btn btn-primary">
-              <span id="process-spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
-              <span id="process-button-text">Process Video</span>
-            </button>
-            <span id="processing-message" class="ms-3" style="display: none;">Processing video... This may take several minutes for large files.</span>
-          </form>
+    <div class="container-fluid">
+        <div class="text-center mb-4">
+            <h1>WALD01 - CS2 Cheat Detection</h1>
+            <p class="mb-3">A simple interface for training and using the CS2 cheat detection model.</p>
+            <a href="/evaluations" class="btn btn-primary squishy">View Saved Evaluations</a>
         </div>
-      </div>
 
-      <!-- Training Section -->
-      <div id="training-section" class="mt-5 card">
-        <div class="card-body">
-            <h2 class="card-title">2. Train or Fine-Tune a Model</h2>
-            <form action="/train" method="post">
-                <div class="mb-3">
-                    <label for="clipsDirectory" class="form-label">Select directory of processed clips:</label>
-                    <select class="form-select" id="clipsDirectory" name="clipsDirectory" required>
-                        {% for clip_dir in processed_clips %}
-                            <option value="{{ clip_dir }}">{{ clip_dir }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Training Type:</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="trainingType" id="trainNew" value="new" checked>
-                        <label class="form-check-label" for="trainNew">
-                            Train a new model
-                        </label>
+        <div id="message-display"></div>
+
+        <div class="row">
+                    <!-- Auto-Edit Section -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card panel h-100">
+                            <div class="card-header"><h3>1. Process Raw Footage</h3></div>
+                            <div class="card-body d-flex flex-column">
+                                <form id="process-form" action="/process" method="post" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label for="videoFile">Select a raw video file:</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="videoFile" name="videoFile" accept=".mp4,.mov,.avi" required>
+                                            <label class="custom-file-label" for="videoFile">Choose file...</label>
+                                        </div>
+                                        <small class="form-text text-muted">Your CS2 gameplay recording with clear audio.</small>
+                                    </div>
+                                    <p class="text-muted small mt-3">Upload a CS2 gameplay video to automatically extract 2-second clips around detected kills.</p>
+                                    <div class="mt-auto">
+                                        <button id="process-button" type="submit" class="btn btn-primary btn-block squishy mt-4">
+                                            <span id="process-spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                            <span id="process-button-text">Process Video</span>
+                                        </button>
+                                        <small id="processing-message" class="form-text text-muted text-center mt-2" style="display: none;">Processing... this may take a while.</small>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="trainingType" id="fineTune" value="finetune">
-                        <label class="form-check-label" for="fineTune">
-                            Fine-tune an existing model
-                        </label>
+
+                    <!-- Training Section -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card panel h-100">
+                            <div class="card-header"><h3>2. Train or Fine-Tune</h3></div>
+                            <div class="card-body d-flex flex-column">
+                                <form action="/train" method="post">
+                                    <div class="form-group">
+                                        <label for="clipsDirectory">Select directory of processed clips:</label>
+                                        <select class="form-control" id="clipsDirectory" name="clipsDirectory" required>
+                                            {% for clip_dir in processed_clips %}
+                                                <option value="{{ clip_dir }}">{{ clip_dir }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Training Type:</label>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="trainingType" id="trainNew" value="new" checked>
+                                            <label class="form-check-label" for="trainNew">Train a new model</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="trainingType" id="fineTune" value="finetune">
+                                            <label class="form-check-label" for="fineTune">Fine-tune an existing model</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="modelType">Label clips as:</label>
+                                        <select class="form-control" id="modelType" name="modelType" required>
+                                            <option value="cheater">Cheater</option>
+                                            <option value="not-cheater">Not Cheater</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" id="existing-model-selector" style="display: none;">
+                                        <label for="existingModel">Select model to fine-tune:</label>
+                                        <select class="form-control" id="existingModel" name="existingModel">
+                                            {% for model in existing_models %}
+                                                <option value="{{ model.path }}">{{ model.display_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <button type="submit" class="btn btn-primary btn-block squishy mt-4">Start Training</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Section -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card panel h-100">
+                            <div class="card-header"><h3>3. Test Clips for Cheating</h3></div>
+                            <div class="card-body d-flex flex-column">
+                                <form action="/evaluate" method="post">
+                                    <div class="form-group">
+                                        <label for="evalClipsDirectory">Select directory of clips to evaluate:</label>
+                                        <select class="form-control" id="evalClipsDirectory" name="clipsDirectory" required>
+                                            {% for clip_dir in processed_clips %}
+                                                <option value="{{ clip_dir }}">{{ clip_dir }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="evalModel">Select model for evaluation:</label>
+                                        <select class="form-control" id="evalModel" name="model" required>
+                                            {% for model in existing_models %}
+                                                <option value="{{ model.path }}">{{ model.display_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <button type="submit" class="btn btn-primary btn-block squishy mt-4">Evaluate Clips</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="modelType" class="form-label">Label clips as:</label>
-                    <select class="form-select" id="modelType" name="modelType" required>
-                        <option value="cheater">Cheater</option>
-                        <option value="not-cheater">Not Cheater</option>
-                    </select>
-                </div>
-                <div class="mb-3" id="existing-model-selector" style="display: none;">
-                    <label for="existingModel" class="form-label">Select existing model to fine-tune:</label>
-                    <select class="form-select" id="existingModel" name="existingModel">
-                        {% for model in existing_models %}
-                            <option value="{{ model.path }}">{{ model.display_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-success">Start Training</button>
-            </form>
-        </div>
-      </div>
-      
-      <!-- Evaluation Section -->
-      <div id="evaluation-section" class="mt-5 card">
-        <div class="card-body">
-            <h2 class="card-title">3. Test Clips for Cheating</h2>
-            <form action="/evaluate" method="post">
-                <div class="mb-3">
-                    <label for="evalClipsDirectory" class="form-label">Select directory of clips to evaluate:</label>
-                    <select class="form-select" id="evalClipsDirectory" name="clipsDirectory" required>
-                        {% for clip_dir in processed_clips %}
-                            <option value="{{ clip_dir }}">{{ clip_dir }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="evalModel" class="form-label">Select model to use for evaluation:</label>
-                    <select class="form-select" id="evalModel" name="model" required>
-                        {% for model in existing_models %}
-                            <option value="{{ model.path }}">{{ model.display_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-danger">Evaluate Clips</button>
-            </form>
-            <div id="results-section" class="mt-4">
-                {% if results_image %}
-                    <h3>Evaluation Results:</h3>
-                    <img src="{{ url_for('static', filename=results_image) }}" class="img-fluid" alt="Evaluation Results">
-                {% endif %}
-            </div>
-        </div>
-      </div>
-
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
     <script>
         // Show/hide the existing model selector based on the training type
         const trainingTypeRadios = document.querySelectorAll('input[name="trainingType"]');
@@ -158,16 +155,9 @@
         videoFileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(1);
-                const fileSizeGB = (file.size / (1024 * 1024 * 1024)).toFixed(2);
-                
-                // Show file size feedback
-                const feedback = document.querySelector('.form-text');
-                if (fileSizeGB >= 1) {
-                    feedback.textContent = `Selected: ${file.name} (${fileSizeGB}GB)`;
-                } else {
-                    feedback.textContent = `Selected: ${file.name} (${fileSizeMB}MB)`;
-                }
+                const fileName = file.name;
+                const nextSibling = e.target.nextElementSibling;
+                nextSibling.innerText = fileName;
             }
         });
 
@@ -183,7 +173,7 @@
             processButton.disabled = true;
             processSpinner.style.display = 'inline-block';
             processButtonText.textContent = 'Processing...';
-            processingMessage.style.display = 'inline';
+            processingMessage.style.display = 'block';
         });
     </script>
   </body>

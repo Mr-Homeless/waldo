@@ -4,146 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluation Progress</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .progress-container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #45a049);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .log-container {
-            background: #1e1e1e;
-            color: #00ff00;
-            padding: 20px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            max-height: 500px;
-            overflow-y: auto;
-            margin-top: 20px;
-            border: 2px solid #333;
-        }
-        .status {
-            font-size: 18px;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .status.running {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        .status.completed {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .status.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .back-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        .back-button:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-        }
-        .evaluation-details {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .detail-item {
-            margin: 8px 0;
-            padding: 8px;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-        .detail-label {
-            font-weight: bold;
-            color: #495057;
-        }
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="header">
-        <h1>🔍 Evaluation Progress</h1>
-        <p>Analyzing clips for cheating detection</p>
+    <div class="container mt-4">
+        <div class="card panel">
+            <div class="card-header">
+                <h1>🔍 Evaluation Progress</h1>
+                <p class="mb-0">Analyzing clips for cheating detection</p>
+            </div>
+            <div class="card-body">
+                <a href="/" class="btn btn-secondary mb-3">← Back to Main</a>
+
+                <div class="card panel mb-3">
+                    <div class="card-header">
+                        <h3>Evaluation Configuration</h3>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Model:</strong> {{ model_name }}</p>
+                        <p><strong>Data Path:</strong> {{ data_path }}</p>
+                        <p><strong>Process ID:</strong> {{ process_id }}</p>
+                        <p><strong>Started:</strong> <span id="start-time">{{ start_time }}</span></p>
+                    </div>
+                </div>
+
+                <div class="card panel">
+                    <div class="card-body">
+                        <div id="status" class="alert alert-info">🔄 Evaluation in progress...</div>
+                        <div class="progress mb-2">
+                            <div id="progress-fill" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div id="progress-text">Starting evaluation...</div>
+                    </div>
+                </div>
+
+                <div class="log-container mt-3">
+                    <div id="logs">Connecting to evaluation stream...</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <a href="/" class="back-button">← Back to Main</a>
-
-    <div class="evaluation-details">
-        <h3>Evaluation Configuration</h3>
-        <div class="detail-item">
-            <span class="detail-label">Model:</span> {{ model_name }}
-        </div>
-        <div class="detail-item">
-            <span class="detail-label">Data Path:</span> {{ data_path }}
-        </div>
-        <div class="detail-item">
-            <span class="detail-label">Process ID:</span> {{ process_id }}
-        </div>
-        <div class="detail-item">
-            <span class="detail-label">Started:</span> <span id="start-time">{{ start_time }}</span>
-        </div>
-    </div>
-
-    <div class="progress-container">
-        <div id="status" class="status running">🔄 Evaluation in progress...</div>
-        <div class="progress-bar">
-            <div id="progress-fill" class="progress-fill"></div>
-        </div>
-        <div id="progress-text">Starting evaluation...</div>
-    </div>
-
-    <div class="log-container" id="log-container">
-        <div id="logs">Connecting to evaluation stream...</div>
-    </div>
-
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
     <script>
         const processId = '{{ process_id }}';
         const eventSource = new EventSource(`/stream-evaluation/${processId}`);
@@ -167,41 +70,46 @@
                 progressText.textContent = data.content;
 
                 // Simple progress estimation based on log content
+                let progress = 0;
                 if (data.content.includes('Loading model')) {
-                    progressFill.style.width = '20%';
+                    progress = 20;
                 } else if (data.content.includes('DataLoader')) {
-                    progressFill.style.width = '40%';
+                    progress = 40;
                 } else if (data.content.includes('Start evaluation')) {
-                    progressFill.style.width = '60%';
+                    progress = 60;
                 } else if (data.content.includes('evaluating')) {
-                    progressFill.style.width = '80%';
+                    progress = 80;
                 }
+                progressFill.style.width = progress + '%';
+                progressFill.setAttribute('aria-valuenow', progress);
 
             } else if (data.type === 'results_ready') {
                 // Show results are ready with button to view detailed analysis
                 const resultsButton = document.createElement('div');
                 resultsButton.innerHTML = `
-                    <div style="margin: 20px 0; padding: 20px; background: #e7f3ff; border: 2px solid #0066cc; border-radius: 10px; text-align: center;">
-                        <h3 style="color: #0066cc; margin: 0 0 10px 0;">📊 Detailed Results Ready!</h3>
-                        <p style="margin: 0 0 15px 0;">Comprehensive analysis of ${data.total_clips} clips is complete.</p>
-                        <a href="/evaluation-results/${data.process_id}"
-                           style="background: #0066cc; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    <div class="alert alert-success mt-3">
+                        <h4 class="alert-heading">📊 Detailed Results Ready!</h4>
+                        <p>Comprehensive analysis of ${data.total_clips} clips is complete.</p>
+                        <hr>
+                        <a href="/evaluation-results/${data.process_id}" class="btn btn-primary">
                            View Detailed Results →
                         </a>
                     </div>
                 `;
-                document.getElementById('log-container').appendChild(resultsButton);
+                document.querySelector('.card-body').appendChild(resultsButton);
                 progressFill.style.width = '95%';
+                progressFill.setAttribute('aria-valuenow', 95);
 
             } else if (data.type === 'status') {
                 if (data.status === 'completed') {
-                    statusDiv.className = 'status completed';
+                    statusDiv.className = 'alert alert-success';
                     statusDiv.innerHTML = '✅ Evaluation completed successfully!';
                     progressFill.style.width = '100%';
+                    progressFill.setAttribute('aria-valuenow', 100);
                     progressText.textContent = 'Evaluation finished';
                     eventSource.close();
                 } else if (data.status === 'error') {
-                    statusDiv.className = 'status error';
+                    statusDiv.className = 'alert alert-danger';
                     statusDiv.innerHTML = '❌ Evaluation failed';
                     progressText.textContent = 'Evaluation failed';
                     eventSource.close();
@@ -211,9 +119,10 @@
 
         eventSource.onerror = function(event) {
             console.log('EventSource failed:', event);
-            statusDiv.className = 'status error';
+            statusDiv.className = 'alert alert-danger';
             statusDiv.innerHTML = '❌ Connection lost';
             progressText.textContent = 'Connection error';
+            eventSource.close();
         };
 
         // Auto-scroll logs
