@@ -156,6 +156,86 @@ fi
 
 echo
 echo "=================================================="
+echo "Downloading AI Model..."
+echo "=================================================="
+echo
+
+# Create the deepcheat directory if it doesn't exist
+mkdir -p deepcheat
+
+# Download the model file
+MODEL_URL="https://huggingface.co/jinggu/jing-model/resolve/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+MODEL_PATH="deepcheat/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+
+echo "Downloading AI model (1.9GB - this may take several minutes)..."
+echo "From: $MODEL_URL"
+echo "To: $MODEL_PATH"
+echo
+
+# Try downloading with curl first (with follow redirects)
+if command -v curl &> /dev/null; then
+    echo "Using curl to download..."
+    if curl -L --progress-bar -o "$MODEL_PATH" "$MODEL_URL"; then
+        echo "✅ Model downloaded successfully with curl!"
+        MODEL_DOWNLOADED=true
+    else
+        echo "❌ Download failed with curl, trying wget..."
+        MODEL_DOWNLOADED=false
+    fi
+elif command -v wget &> /dev/null; then
+    echo "Using wget to download..."
+    if wget --show-progress -O "$MODEL_PATH" "$MODEL_URL"; then
+        echo "✅ Model downloaded successfully with wget!"
+        MODEL_DOWNLOADED=true
+    else
+        echo "❌ Download failed with wget..."
+        MODEL_DOWNLOADED=false
+    fi
+else
+    echo "❌ Neither curl nor wget found..."
+    MODEL_DOWNLOADED=false
+fi
+
+# If download failed, provide manual instructions
+if [ "$MODEL_DOWNLOADED" != true ]; then
+    echo
+    echo "=================================================="
+    echo "⚠️  MANUAL DOWNLOAD REQUIRED"
+    echo "=================================================="
+    echo
+    echo "The automatic download failed. Please download the model manually:"
+    echo
+    echo "1. Go to: https://huggingface.co/jinggu/jing-model/blob/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+    echo "2. Click the download button"
+    echo "3. Save the file as: $MODEL_PATH"
+    echo
+    echo "The file should be approximately 1.9GB in size."
+    echo
+    echo "Possible reasons for download failure:"
+    echo "- Network connectivity issues"
+    echo "- Insufficient disk space"
+    echo "- Firewall or proxy restrictions"
+    echo
+else
+    # Verify the downloaded file
+    if [ -f "$MODEL_PATH" ]; then
+        FILE_SIZE=$(du -h "$MODEL_PATH" | cut -f1)
+        echo "Model file size: $FILE_SIZE"
+        
+        # Basic size check (should be around 1.9GB)
+        FILE_SIZE_BYTES=$(stat -f%z "$MODEL_PATH" 2>/dev/null || stat -c%s "$MODEL_PATH" 2>/dev/null)
+        if [ "$FILE_SIZE_BYTES" -gt 1000000000 ]; then
+            echo "✅ Model file appears to be the correct size"
+        else
+            echo "⚠️  Warning: Model file seems smaller than expected"
+            echo "   Expected: ~1.9GB, Got: $FILE_SIZE"
+            echo "   You may need to download it manually"
+        fi
+    fi
+fi
+
+echo
+echo "=================================================="
 echo "Installation Complete!"
 echo "=================================================="
 echo
@@ -164,8 +244,14 @@ echo "1. Run: ./run.sh"
 echo "   (The run script will automatically activate the environment)"
 echo "2. Open your browser to http://localhost:5000"
 echo
-echo "Note: The model weights (.pth files) need to be placed in:"
-echo "  deepcheat/VideoMAEv2/output/"
+
+if [ "$MODEL_DOWNLOADED" = true ]; then
+    echo "✅ AI model is ready to use!"
+else
+    echo "⚠️  Remember to download the AI model manually before using the system"
+    echo "   Place it in: $MODEL_PATH"
+fi
+
 echo
 echo "Press Enter to exit..."
 read

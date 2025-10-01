@@ -161,11 +161,70 @@ set INSTALL_RESULT=%errorlevel%
 if %INSTALL_RESULT% equ 0 (
     echo.
     echo ======================================================================
-    echo  SETUP COMPLETE!
+    echo  DOWNLOADING AI MODEL...
     echo ======================================================================
     echo.
-    echo The Waldo Alpha application has been successfully installed in WSL!
+    echo Downloading the AI model file (1.9GB - this may take several minutes)...
     echo.
+    
+    REM Download the model file using WSL
+    set "MODEL_URL=https://huggingface.co/jinggu/jing-model/resolve/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+    set "MODEL_PATH=deepcheat/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+    
+    echo Downloading from: %MODEL_URL%
+    echo Saving to: %MODEL_PATH%
+    echo.
+    
+    REM Try downloading with curl first (with follow redirects)
+    wsl -e bash -c "cd '%WSL_PATH%' && if command -v curl >/dev/null 2>&1; then echo 'Using curl to download...'; curl -L --progress-bar -o '%MODEL_PATH%' '%MODEL_URL%' && echo 'Model downloaded successfully with curl!' && exit 0; else echo 'curl not found, trying wget...'; fi; if command -v wget >/dev/null 2>&1; then echo 'Using wget to download...'; wget --show-progress -O '%MODEL_PATH%' '%MODEL_URL%' && echo 'Model downloaded successfully with wget!' && exit 0; else echo 'wget not found'; fi; echo 'Download failed' && exit 1"
+    
+    if %errorlevel% equ 0 (
+        echo.
+        echo ✅ AI model downloaded successfully!
+        echo.
+        
+        REM Verify the downloaded file size
+        echo Verifying download...
+        wsl -e bash -c "cd '%WSL_PATH%' && if [ -f '%MODEL_PATH%' ]; then FILE_SIZE=$(du -h '%MODEL_PATH%' | cut -f1); echo 'Model file size: '$FILE_SIZE; FILE_SIZE_BYTES=$(stat -c%%s '%MODEL_PATH%' 2>/dev/null || stat -f%%z '%MODEL_PATH%' 2>/dev/null); if [ $FILE_SIZE_BYTES -gt 1000000000 ]; then echo '✅ Model file appears to be the correct size'; else echo '⚠️ Warning: Model file seems smaller than expected'; fi; else echo '❌ Model file not found after download'; fi"
+        
+        echo.
+        echo ======================================================================
+        echo  SETUP COMPLETE!
+        echo ======================================================================
+        echo.
+        echo The Waldo Alpha application has been successfully installed in WSL!
+        echo ✅ AI model is ready to use!
+        echo.
+    ) else (
+        echo.
+        echo ❌ Model download failed!
+        echo.
+        echo ======================================================================
+        echo  ⚠️ MANUAL DOWNLOAD REQUIRED
+        echo ======================================================================
+        echo.
+        echo The automatic download failed. Please download the model manually:
+        echo.
+        echo 1. Go to: https://huggingface.co/jinggu/jing-model/blob/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth
+        echo 2. Click the download button
+        echo 3. Save the file to: %WSL_PATH%\%MODEL_PATH%
+        echo.
+        echo The file should be approximately 1.9GB in size.
+        echo.
+        echo Possible reasons for download failure:
+        echo - Network connectivity issues
+        echo - Insufficient disk space
+        echo - Firewall or proxy restrictions
+        echo.
+        echo ======================================================================
+        echo  SETUP COMPLETE (except model download)
+        echo ======================================================================
+        echo.
+        echo The Waldo Alpha application has been successfully installed in WSL!
+        echo ⚠️ Remember to download the AI model manually before using the system.
+        echo.
+    )
+    
     echo To run the application:
     echo   1. Use wsl-run.bat (recommended)
     echo   2. Or manually: wsl -e bash -c "cd '%WSL_PATH%' && ./run.sh"

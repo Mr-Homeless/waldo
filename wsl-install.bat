@@ -165,23 +165,58 @@ echo WSL and Ubuntu have been installed successfully!
 echo.
 echo IMPORTANT: You must restart your computer before proceeding.
 echo.
+
+REM Cancel any pending reboots first
+echo Canceling any pending system reboots...
+shutdown /a >nul 2>&1
+
 echo After restarting:
 echo 1. Ubuntu will prompt you to create a username and password
 echo 2. Remember these credentials - you'll need them
 echo 3. Run wsl-setup.bat to install the Waldo Alpha application
 echo.
+echo ======================================================================
+echo  IMPORTANT: Windows may show an automatic reboot prompt
+echo ======================================================================
+echo.
+echo If you see a BLUE SCREEN with a countdown timer asking to restart:
+echo   - Press ENTER to CANCEL the automatic reboot
+echo   - This gives you control over when to restart
+echo   - You can then choose when to restart below
+echo.
+echo ======================================================================
+echo.
 echo Would you like to restart now? (Y/N)
 choice /c YN /m "Restart computer"
 if errorlevel 2 (
     echo.
-    echo Please restart manually before running wsl-setup.bat
+    echo ======================================================================
+    echo  Manual Restart Required
+    echo ======================================================================
+    echo.
+    echo Please restart your computer manually when ready.
+    echo.
+    echo IMPORTANT: If Windows shows a blue restart prompt with countdown:
+    echo   1. Press ENTER to cancel the automatic restart
+    echo   2. Save your work
+    echo   3. Restart manually when ready
+    echo.
+    echo After restarting, run wsl-setup.bat to continue installation.
     echo.
     pause
     exit /b 0
 ) else (
     echo.
+    echo ======================================================================
+    echo  Initiating Restart
+    echo ======================================================================
+    echo.
     echo Restarting in 10 seconds...
     echo Save any open work now!
+    echo.
+    echo If a blue screen appears asking about restart:
+    echo   - Let the countdown complete OR press ENTER to proceed
+    echo.
     timeout /t 10
     shutdown /r /t 0
 )
