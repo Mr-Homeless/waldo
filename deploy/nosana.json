@@ -1,0 +1,28 @@
+{
+  "version": "0.1",
+  "type": "container",
+  "ops": [
+    {
+      "type": "container/run",
+      "id": "waldo",
+      "args": {
+        "image": "docker.io/matthammond962/waldo:v1.0.0-alpha_no-model",
+        "gpu": true,
+        "expose": 5000,
+        "env": {
+          "MODEL_PATH": "/model"
+        },
+        "resources": [
+          {
+            "type": "HF",
+            "repo": "jinggu/jing-model",
+            "files": [
+              "vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+            ],
+            "target": "/model"
+          }
+        ]
+      }
+    }
+  ]
+}
