@@ -33,7 +33,7 @@ decord>=0.6.0
 # triton>=2.0.0
 
 # System utilities
-protobuf==3.20.3
+protobuf==4.25.8
 
 # Additional utilities
 tqdm>=4.62.0
