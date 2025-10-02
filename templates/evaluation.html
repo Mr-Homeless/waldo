@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    
     <script>
         const processId = '{{ process_id }}';
         const eventSource = new EventSource(`/stream-evaluation/${processId}`);

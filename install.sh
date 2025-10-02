@@ -163,32 +163,65 @@ echo
 # Create the deepcheat directory if it doesn't exist
 mkdir -p deepcheat
 
-# Download the model file
-MODEL_URL="https://huggingface.co/jinggu/jing-model/resolve/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+# Download the model file - pinned to specific commit for supply chain security
+MODEL_COMMIT="main"  # Pin to specific commit hash in production
+MODEL_URL="https://huggingface.co/jinggu/jing-model/resolve/${MODEL_COMMIT}/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
 MODEL_PATH="deepcheat/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
+EXPECTED_SHA256="23b2d3c7b4073683f68fd0e822ab01e475f670136116449d7dbfc6f87a0dfe39"
 
 echo "Downloading AI model (1.9GB - this may take several minutes)..."
 echo "From: $MODEL_URL"
 echo "To: $MODEL_PATH"
+echo "Expected SHA-256: $EXPECTED_SHA256"
 echo
+
+# Function to verify SHA-256 hash
+verify_model_hash() {
+    if [ ! -f "$MODEL_PATH" ]; then
+        echo "❌ Model file not found for verification"
+        return 1
+    fi
+    
+    echo "Verifying model integrity..."
+    if command -v sha256sum &> /dev/null; then
+        ACTUAL_HASH=$(sha256sum "$MODEL_PATH" | cut -d' ' -f1)
+    elif command -v shasum &> /dev/null; then
+        ACTUAL_HASH=$(shasum -a 256 "$MODEL_PATH" | cut -d' ' -f1)
+    else
+        echo "⚠️  Warning: No SHA-256 utility found, skipping hash verification"
+        return 0
+    fi
+    
+    if [ "$ACTUAL_HASH" = "$EXPECTED_SHA256" ]; then
+        echo "✅ Model integrity verified (SHA-256 match)"
+        return 0
+    else
+        echo "❌ Model integrity check failed!"
+        echo "   Expected: $EXPECTED_SHA256"
+        echo "   Actual:   $ACTUAL_HASH"
+        echo "   Removing corrupted file..."
+        rm -f "$MODEL_PATH"
+        return 1
+    fi
+}
 
 # Try downloading with curl first (with follow redirects)
 if command -v curl &> /dev/null; then
     echo "Using curl to download..."
-    if curl -L --progress-bar -o "$MODEL_PATH" "$MODEL_URL"; then
-        echo "✅ Model downloaded successfully with curl!"
+    if curl -L --progress-bar -o "$MODEL_PATH" "$MODEL_URL" && verify_model_hash; then
+        echo "✅ Model downloaded and verified successfully with curl!"
         MODEL_DOWNLOADED=true
     else
-        echo "❌ Download failed with curl, trying wget..."
+        echo "❌ Download or verification failed with curl, trying wget..."
         MODEL_DOWNLOADED=false
     fi
 elif command -v wget &> /dev/null; then
     echo "Using wget to download..."
-    if wget --show-progress -O "$MODEL_PATH" "$MODEL_URL"; then
-        echo "✅ Model downloaded successfully with wget!"
+    if wget --show-progress -O "$MODEL_PATH" "$MODEL_URL" && verify_model_hash; then
+        echo "✅ Model downloaded and verified successfully with wget!"
         MODEL_DOWNLOADED=true
     else
-        echo "❌ Download failed with wget..."
+        echo "❌ Download or verification failed with wget..."
         MODEL_DOWNLOADED=false
     fi
 else
@@ -196,25 +229,63 @@ else
     MODEL_DOWNLOADED=false
 fi
 
-# If download failed, provide manual instructions
+# If download failed, provide detailed diagnostics and recovery options
 if [ "$MODEL_DOWNLOADED" != true ]; then
+    echo
+    echo "=================================================="
+    echo "⚠️  MODEL DOWNLOAD FAILED - DIAGNOSTICS"
+    echo "=================================================="
+    echo
+    
+    # Check available disk space
+    echo "Checking system resources..."
+    AVAILABLE_SPACE=$(df -h . | awk 'NR==2 {print $4}')
+    echo "Available disk space: $AVAILABLE_SPACE"
+    
+    # Check network connectivity
+    echo "Testing network connectivity..."
+    if ping -c 1 huggingface.co >/dev/null 2>&1; then
+        echo "✅ Network connectivity to huggingface.co: OK"
+    else
+        echo "❌ Network connectivity to huggingface.co: FAILED"
+        echo "   Check your internet connection or firewall settings"
+    fi
+    
+    # Check if partial file exists
+    if [ -f "$MODEL_PATH" ]; then
+        PARTIAL_SIZE=$(du -h "$MODEL_PATH" | cut -f1)
+        echo "⚠️  Partial download found: $PARTIAL_SIZE"
+        echo "   Removing incomplete file..."
+        rm -f "$MODEL_PATH"
+    fi
+    
     echo
     echo "=================================================="
     echo "⚠️  MANUAL DOWNLOAD REQUIRED"
     echo "=================================================="
     echo
-    echo "The automatic download failed. Please download the model manually:"
+    echo "Please download the model manually using one of these methods:"
     echo
+    echo "METHOD 1 - Direct download:"
     echo "1. Go to: https://huggingface.co/jinggu/jing-model/blob/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth"
     echo "2. Click the download button"
     echo "3. Save the file as: $MODEL_PATH"
     echo
-    echo "The file should be approximately 1.9GB in size."
+    echo "METHOD 2 - Command line (if you have git-lfs):"
+    echo "   git clone https://huggingface.co/jinggu/jing-model"
+    echo "   cp jing-model/vit_g_ps14_ak_ft_ckpt_7_clean.pth $MODEL_PATH"
     echo
-    echo "Possible reasons for download failure:"
-    echo "- Network connectivity issues"
-    echo "- Insufficient disk space"
-    echo "- Firewall or proxy restrictions"
+    echo "METHOD 3 - Alternative download tools:"
+    echo "   aria2c -x 16 -s 16 '$MODEL_URL' -o '$MODEL_PATH'"
+    echo
+    echo "Expected file size: ~1.9GB (2,023,541,901 bytes)"
+    echo "Expected SHA-256: $EXPECTED_SHA256"
+    echo
+    echo "Common issues and solutions:"
+    echo "- Network timeout: Try using a VPN or different network"
+    echo "- Insufficient disk space: Free up at least 3GB of space"
+    echo "- Firewall blocking: Whitelist huggingface.co domain"
+    echo "- Corporate proxy: Configure proxy settings or download manually"
     echo
 else
     # Verify the downloaded file

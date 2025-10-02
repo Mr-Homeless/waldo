@@ -93,7 +93,7 @@
                             </thead>
                             <tbody>
                                 {% for clip in results.clip_results %}
-                                <tr class="interactive-row">
+                                <tr>
                                     <td>#{{ clip.id + 1 }}</td>
                                     <td class="text-monospace">{{ clip.clip_name }}</td>
                                     <td>
@@ -134,6 +134,6 @@
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    
 </body>
 </html>
