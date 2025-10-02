@@ -4,182 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saved Evaluation Results</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .back-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        .evaluations-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        .evaluations-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-        }
-        .evaluation-item {
-            display: grid;
-            grid-template-columns: 40px 1fr 150px 100px 200px 150px;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e9ecef;
-            transition: background-color 0.2s;
-        }
-        .evaluation-item:hover {
-            background-color: #f8f9fa;
-        }
-        .evaluation-header-row {
-            display: grid;
-            grid-template-columns: 40px 1fr 150px 100px 200px 150px;
-            padding: 15px 20px;
-            background: #f8f9fa;
-            font-weight: bold;
-            border-bottom: 2px solid #dee2e6;
-        }
-        .evaluation-id {
-            font-weight: bold;
-            color: #495057;
-        }
-        .evaluation-dataset {
-            font-family: monospace;
-            color: #212529;
-            font-size: 14px;
-        }
-        .evaluation-model {
-            font-size: 13px;
-            color: #6c757d;
-        }
-        .evaluation-clips {
-            text-align: center;
-            font-weight: bold;
-        }
-        .evaluation-time {
-            font-size: 13px;
-            color: #6c757d;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-        .btn-small {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .btn-primary {
-            background: #007bff;
-            color: white;
-        }
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        .empty-state {
-            padding: 60px;
-            text-align: center;
-            color: #6c757d;
-        }
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        .info-box {
-            background: #e7f3ff;
-            border: 1px solid #bee5eb;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            color: #0c5460;
-        }
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="header">
-        <h1>📂 Saved Evaluation Results</h1>
-        <p>Access previously analyzed gameplay evaluations</p>
-    </div>
-
-    <a href="/" class="back-button">← Back to Main</a>
-
-    <div class="info-box">
-        <strong>💾 About Saved Results:</strong> All evaluation results are automatically saved and can be accessed later.
-        This includes the analysis scores, statistics, and the 16 frames analyzed for each clip.
-        Results persist across sessions and can be exported for further analysis.
-    </div>
-
-    {% if evaluations %}
-    <div class="evaluations-container">
-        <div class="evaluations-header">
-            <h3 style="margin: 0;">📊 Available Evaluations</h3>
-        </div>
-
-        <div class="evaluation-header-row">
-            <div>#</div>
-            <div>Dataset</div>
-            <div>Model</div>
-            <div>Clips</div>
-            <div>Timestamp</div>
-            <div>Actions</div>
-        </div>
-
-        {% for eval in evaluations %}
-        <div class="evaluation-item">
-            <div class="evaluation-id">{{ loop.index }}</div>
-            <div>
-                <div class="evaluation-dataset">{{ eval.dataset }}</div>
-                <div style="font-size: 10px; color: #adb5bd; margin-top: 2px;">ID: {{ eval.process_id[:8] }}...</div>
+    <div class="container mt-4">
+        <div class="card panel">
+            <div class="card-header text-center">
+                <h1>📂 Saved Evaluation Results</h1>
+                <p class="mb-0">Access previously analyzed gameplay evaluations</p>
             </div>
-            <div class="evaluation-model">{{ eval.model }}</div>
-            <div class="evaluation-clips">{{ eval.clips_count }}</div>
-            <div class="evaluation-time">{{ eval.timestamp[:19].replace('T', ' ') }}</div>
-            <div class="action-buttons">
-                <a href="/evaluation-results/{{ eval.process_id }}" class="btn-small btn-primary">View</a>
-                <a href="/export-results/{{ eval.process_id }}" class="btn-small btn-success">Export</a>
+            <div class="card-body">
+                <div class="text-left mb-4">
+                    <a href="/" class="btn btn-secondary squishy">← Back to Main</a>
+                </div>
+
+                <div class="alert alert-info" role="alert">
+                    <strong>💾 About Saved Results:</strong> All evaluation results are automatically saved and can be accessed later.
+                    This includes the analysis scores, statistics, and the 16 frames analyzed for each clip.
+                    Results persist across sessions and can be exported for further analysis.
+                </div>
+
+                {% if evaluations %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Dataset</th>
+                                <th scope="col">Model</th>
+                                <th scope="col">Clips</th>
+                                <th scope="col">Timestamp</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for eval in evaluations %}
+                            <tr>
+                                <th scope="row">{{ loop.index }}</th>
+                                <td>
+                                    <div class="font-weight-bold">{{ eval.dataset }}</div>
+                                    <small class="text-muted">ID: {{ eval.process_id[:8] }}...</small>
+                                </td>
+                                <td>{{ eval.model }}</td>
+                                <td class="text-center">{{ eval.clips_count }}</td>
+                                <td>{{ eval.timestamp[:19].replace('T', ' ') }}</td>
+                                <td>
+                                    <a href="/evaluation-results/{{ eval.process_id }}" class="btn btn-primary btn-sm squishy">View</a>
+                                    <a href="/export-results/{{ eval.process_id }}" class="btn btn-success btn-sm squishy">Export</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center p-5">
+                    <div style="font-size: 48px;" class="mb-3">📭</div>
+                    <h3>No Saved Evaluations</h3>
+                    <p class="text-muted">Run an evaluation to see results here.</p>
+                    <a href="/" class="btn btn-primary squishy mt-3">Go to Main Page</a>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <div class="evaluations-container">
-        <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <h3>No Saved Evaluations</h3>
-            <p>Run an evaluation to see results here.</p>
-            <a href="/" class="btn-small btn-primary" style="padding: 12px 24px; font-size: 14px; margin-top: 20px; display: inline-block;">
-                Go to Main Page
-            </a>
-        </div>
-    </div>
-    {% endif %}
+    
 </body>
 </html>

@@ -31,16 +31,11 @@ This system uses cutting-edge Vision Transformer deep learning technology to ana
     Double click wsl-setup.bat to run it without elevated privilages. This will auto-install the conda environment and all the requirements within the new WSL you just made. 
 
 
-### Step 2: Prepare model for training/inferencing
+### Step 2: Complete Setup
 
-1. **Download the model**
-    Go to https://huggingface.co/jinggu/jing-model/blob/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth and download the .pth file
+The setup scripts will automatically download the required AI model (1.9GB) during installation. If the automatic download fails, you'll be provided with manual download instructions.
 
-2. **Place the model**
-
-    Place this .pth file in the "deepcheat/VideoMAEv2" folder found in the extracted project files. Paste any other downloaded models in "deepcheat/VideoMAEv2/output" for inferencing or fine tuning. 
-
-3. **You're ready to train a model and analyze CS2 clips!**
+**You're ready to train a model and analyze CS2 clips!**
 
 
 ### Step 3: Run the Application
@@ -72,10 +67,8 @@ echo "🔧 Installing dependencies..."
 chmod +x install.sh
 ./install.sh
 
-# Download the model file
-echo "🤖 Downloading AI model (1.9GB - this will take a few minutes)..."
-wget --show-progress -O deepcheat/vit_g_ps14_ak_ft_ckpt_7_clean.pth \
-  https://huggingface.co/jinggu/jing-model/resolve/main/vit_g_ps14_ak_ft_ckpt_7_clean.pth
+# The install.sh script will automatically download the AI model
+echo "🤖 AI model will be downloaded automatically during setup..."
 
 # Ask user if they want to run the server
 echo ""

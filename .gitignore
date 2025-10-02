@@ -9,3 +9,15 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+/.history
+
+# AI model files - prevent accidental commits of large model files
+*.pth
+deepcheat/*.pth
+
+# Temporary processing directories
+temp_processing/
+processed_clips/
+processed_vids/
+uploads/
+evaluation_results/

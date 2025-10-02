@@ -1,214 +1,134 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Clip Analysis - {{ clip.clip_name }}</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            line-height: 1.6;
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        .back-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-        .analysis-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        .video-section {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .analysis-section {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .video-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        video {
-            width: 100%;
-            max-width: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .confidence-display {
-            text-align: center;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 10px;
-            color: white;
-            background-color: {{ clip.confidence.color }};
-        }
-        .confidence-score {
-            font-size: 48px;
-            font-weight: bold;
-            margin: 0;
-        }
-        .confidence-label {
-            font-size: 18px;
-            margin: 5px 0;
-        }
-        .confidence-category {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        .detail-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 12px 0;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-        .detail-label {
-            font-weight: 500;
-            color: #495057;
-        }
-        .detail-value {
-            font-weight: bold;
-            color: #212529;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background-color: {{ clip.confidence.color }};
-            width: {{ (clip.normalized_score * 100)|round }}%;
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-        }
-        .technical-details {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #856404;
-        }
-        .info-box {
-            background: #e7f3ff;
-            border: 1px solid #bee5eb;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #0c5460;
-        }
-        .section-title {
-            color: #333;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .probability-explanation {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-        }
-        .formula {
-            font-family: monospace;
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin: 5px 0;
-            font-size: 12px;
-        }
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            overflow: auto;
-        }
-        .modal-content {
-            margin: 50px auto;
-            display: block;
-            max-width: 90%;
-            max-height: 90vh;
-        }
-        .modal-caption {
-            text-align: center;
-            color: #ccc;
-            padding: 10px 0;
-            font-size: 18px;
-        }
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .modal-close:hover {
-            color: #bbb;
-        }
-    </style>
-</head>
-<body>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+
     <!-- Frame Modal -->
-    <div id="frameModal" class="modal">
+    <div id="frameModal" class="modal" style="display: none;">
         <span class="modal-close" onclick="closeFrameModal()">&times;</span>
         <img class="modal-content" id="modalImage">
         <div class="modal-caption" id="modalCaption"></div>
     </div>
 
+    <div class="container mt-4">
+        <div class="text-center mb-4">
+            <h1 class="display-4">Clip Analysis</h1>
+            <h2>{{ clip.clip_name }}</h2>
+        </div>
+
+        <a href="/evaluation-results/{{ process_id }}" class="btn btn-secondary mb-4">← Back to Results</a>
+
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card panel h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">Video Playback</h3>
+                        <div class="video-container text-center my-3">
+                            <video controls class="w-100 rounded shadow-sm">
+                                <source src="/serve-video/{{ process_id }}/{{ clip.id }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="alert alert-info">
+                            <strong>Video Information:</strong><br>
+                            • Original file: {{ clip.filename }}<br>
+                            • This is the exact clip analyzed by the model.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card panel h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">Model Prediction</h3>
+                        <div class="text-center p-3 my-3 rounded" style="background-color: {{ clip.confidence.color }}; color: white;">
+                            <div style="font-size: 3rem; font-weight: bold;">{{ "%.3f"|format(clip.normalized_score) }}</div>
+                            <div>{{ clip.confidence.category }}</div>
+                            <small>{{ clip.confidence.label }}</small>
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: {{ (clip.normalized_score * 100)|round }}%; background-color: {{ clip.confidence.color }};" aria-valuenow="{{ (clip.normalized_score * 100)|round }}" aria-valuemin="0" aria-valuemax="100">{{ (clip.normalized_score * 100)|round }}%</div>
+                        </div>
+                        <div class="alert alert-light border">
+                            <strong>Probability Estimate:</strong> {{ "%.1f"|format(clip.probability * 100) }}%
+                            <div class="font-monospace small text-muted mt-1">P = 1 / (1 + e^(-logit))</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card panel mt-4">
+            <div class="card-body">
+                <h3 class="card-title">Technical Analysis</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Clip ID: <span>#{{ clip.id + 1 }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Normalized Score: <span class="font-monospace">{{ "%.6f"|format(clip.normalized_score) }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Estimated Probability: <span class="font-monospace">{{ "%.4f"|format(clip.probability) }} ({{ "%.1f"|format(clip.probability * 100) }}%)</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Confidence Level: <span>{{ clip.confidence.level }}/5</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Category: <span style="color: {{ clip.confidence.color }};">{{ clip.confidence.category }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center text-break">File Path: <span class="font-monospace small">{{ clip.video_path }}</span></li>
+                </ul>
+            </div>
+        </div>
+
+        {% if clip.frame_paths and clip.frame_paths|length > 0 %}
+        <div class="card panel mt-4">
+            <div class="card-body">
+                <h3 class="card-title">Analyzed Frames</h3>
+                <p class="text-muted">These are the 16 frames analyzed by the model, extracted from the killshot moment with an adaptive center crop.</p>
+                <div class="row row-cols-4 row-cols-md-8 g-2">
+                    {% for i in range(clip.frame_paths|length) %}
+                    <div class="col">
+                        <div class="frame-container">
+                            <img src="/serve-frame/{{ process_id }}/{{ clip.id }}/{{ i }}" alt="Frame {{ i + 1 }}" class="img-fluid rounded border" style="cursor: pointer;" onclick="showFrameModal('/serve-frame/{{ process_id }}/{{ clip.id }}/{{ i }}', {{ i + 1 }})">
+                            <div class="small text-muted text-center mt-1">{{ "%.2f"|format((i / 15.0)) }}s</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card panel mt-4">
+            <div class="card-body">
+                <h3 class="card-title">Score Interpretation Guide</h3>
+                <div class="row g-2 text-center text-white">
+                    <div class="col" style="background-color: #dc3545; padding: 10px; border-radius: 5px;"><strong>0.8-1.0</strong><br><small>Very High</small></div>
+                    <div class="col" style="background-color: #fd7e14; padding: 10px; border-radius: 5px;"><strong>0.6-0.8</strong><br><small>High</small></div>
+                    <div class="col" style="background-color: #ffc107; padding: 10px; border-radius: 5px; color: #212529 !important;"><strong>0.4-0.6</strong><br><small>Medium</small></div>
+                    <div class="col" style="background-color: #20c997; padding: 10px; border-radius: 5px;"><strong>0.2-0.4</strong><br><small>Low</small></div>
+                    <div class="col" style="background-color: #28a745; padding: 10px; border-radius: 5px;"><strong>0.0-0.2</strong><br><small>Very Low</small></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-warning mt-4">
+            <strong>Important Note:</strong> Model predictions are not definitive proof. Always use these results as guidance, not absolute truth.
+        </div>
+
+        <div class="card panel mt-4">
+            <div class="card-body">
+                <h3 class="card-title">Model Information</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Architecture: <span>Vision Transformer (ViT)</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Model Size: <span>vit_giant_patch14_224</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Analysis Time: <span>{{ metadata.evaluation_timestamp[:19].replace('T', ' ') }}</span></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center text-break">Model Path: <span class="font-monospace small">{{ metadata.model_path }}</span></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    
     <script>
         function showFrameModal(src, frameNumber) {
             const modal = document.getElementById('frameModal');
@@ -216,14 +136,13 @@
             const captionText = document.getElementById('modalCaption');
             modal.style.display = "block";
             modalImg.src = src;
-            captionText.innerHTML = `Frame ${frameNumber} of 16 (adaptive center crop from frames 85-100)`;
+            captionText.innerHTML = `Frame ${frameNumber} of 16`;
         }
 
         function closeFrameModal() {
             document.getElementById('frameModal').style.display = "none";
         }
 
-        // Close modal when clicking outside the image
         window.onclick = function(event) {
             const modal = document.getElementById('frameModal');
             if (event.target == modal) {
@@ -231,189 +150,5 @@
             }
         }
     </script>
-    <div class="header">
-        <h1>🔍 Clip Analysis</h1>
-        <h2>{{ clip.clip_name }}</h2>
-    </div>
-
-    <a href="/evaluation-results/{{ process_id }}" class="back-button">← Back to Results</a>
-
-    <div class="analysis-grid">
-        <div class="video-section">
-            <h3 class="section-title">🎬 Video Playback</h3>
-            <div class="video-container">
-                <video controls>
-                    <source src="/serve-video/{{ process_id }}/{{ clip.id }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-            <div class="info-box">
-                <strong>📹 Video Information:</strong><br>
-                • Original file: {{ clip.filename }}<br>
-                • This is the exact clip analyzed by the model<br>
-                • Model processes 16 frames at 224x224 resolution
-            </div>
-        </div>
-
-        <div class="analysis-section">
-            <h3 class="section-title">🎯 Model Prediction</h3>
-
-            <div class="confidence-display">
-                <div class="confidence-score">{{ "%.3f"|format(clip.normalized_score) }}</div>
-                <div class="confidence-label">{{ clip.confidence.category }}</div>
-                <div class="confidence-category">{{ clip.confidence.label }}</div>
-            </div>
-
-            <div class="progress-bar">
-                <div class="progress-fill">
-                    {{ (clip.normalized_score * 100)|round }}%
-                </div>
-            </div>
-
-            <div class="probability-explanation">
-                <strong>🧮 Probability Estimate:</strong><br>
-                Using sigmoid transformation: <strong>{{ "%.1f"|format(clip.probability * 100) }}%</strong><br>
-                <div class="formula">P = 1 / (1 + e^(-logit))</div>
-                <small>* Experimental feature based on estimated logit reconstruction</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="technical-details">
-        <h3 class="section-title">🔧 Technical Analysis</h3>
-
-        <div class="detail-item">
-            <span class="detail-label">Clip ID:</span>
-            <span class="detail-value">#{{ clip.id + 1 }}</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Normalized Score:</span>
-            <span class="detail-value">{{ "%.6f"|format(clip.normalized_score) }}</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Estimated Probability:</span>
-            <span class="detail-value">{{ "%.4f"|format(clip.probability) }} ({{ "%.1f"|format(clip.probability * 100) }}%)</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Confidence Level:</span>
-            <span class="detail-value">{{ clip.confidence.level }}/5</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Category:</span>
-            <span class="detail-value" style="color: {{ clip.confidence.color }}">{{ clip.confidence.category }}</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">File Path:</span>
-            <span class="detail-value" style="font-family: monospace; font-size: 12px;">{{ clip.video_path }}</span>
-        </div>
-    </div>
-
-    {% if clip.frame_paths and clip.frame_paths|length > 0 %}
-    <div class="technical-details">
-        <h3 class="section-title">🖼️ Analyzed Frames (Adaptive Center Crop)</h3>
-        <p style="margin-bottom: 15px; color: #6c757d;">
-            These are the exact 16 frames that were analyzed by the model, extracted from frames 85-100 (killshot moment) with an adaptive center crop.
-            Crop size is scaled based on video resolution to maintain the same field of view as the training data (6.25% of video width).
-            The model internally resizes these to 224x224 during processing.
-        </p>
-        <div class="frames-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px;">
-            {% for i in range(clip.frame_paths|length) %}
-            <div class="frame-container" style="text-align: center; border: 1px solid #dee2e6; border-radius: 8px; padding: 8px; background: white;">
-                <img src="/serve-frame/{{ process_id }}/{{ clip.id }}/{{ i }}"
-                     alt="Frame {{ i + 1 }}"
-                     style="width: 100%; height: auto; border-radius: 4px; cursor: pointer;"
-                     onclick="showFrameModal('/serve-frame/{{ process_id }}/{{ clip.id }}/{{ i }}', {{ i + 1 }})">
-                <div style="font-size: 12px; color: #6c757d; margin-top: 5px;">Frame {{ i + 1 }}/16</div>
-                <div style="font-size: 10px; color: #adb5bd;">{{ "%.3f"|format((i / 15.0)) }}s</div>
-            </div>
-            {% endfor %}
-        </div>
-        <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
-            <small style="color: #6c757d;">
-                💡 <strong>Tip:</strong> Click on any frame to view it in full size.
-                These frames were extracted at 16 FPS and represent approximately 1 second of gameplay.
-            </small>
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="technical-details">
-        <h3 class="section-title">📊 Score Interpretation Guide</h3>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-            <div style="padding: 15px; border-radius: 8px; background: #dc3545; color: white; text-align: center;">
-                <strong>0.8 - 1.0</strong><br>
-                Very High Confidence<br>
-                <small>Likely Cheating</small>
-            </div>
-            <div style="padding: 15px; border-radius: 8px; background: #fd7e14; color: white; text-align: center;">
-                <strong>0.6 - 0.8</strong><br>
-                High Confidence<br>
-                <small>Possible Cheating</small>
-            </div>
-            <div style="padding: 15px; border-radius: 8px; background: #ffc107; color: #212529; text-align: center;">
-                <strong>0.4 - 0.6</strong><br>
-                Medium Confidence<br>
-                <small>Uncertain</small>
-            </div>
-            <div style="padding: 15px; border-radius: 8px; background: #20c997; color: white; text-align: center;">
-                <strong>0.2 - 0.4</strong><br>
-                Low Confidence<br>
-                <small>Likely Legitimate</small>
-            </div>
-            <div style="padding: 15px; border-radius: 8px; background: #28a745; color: white; text-align: center;">
-                <strong>0.0 - 0.2</strong><br>
-                Very Low Confidence<br>
-                <small>Likely Legitimate</small>
-            </div>
-        </div>
-    </div>
-
-    <div class="warning-box">
-        <strong>⚠️ Important Notes:</strong><br>
-        • These are model predictions, not definitive proof<br>
-        • Always consider multiple factors when evaluating gameplay<br>
-        • Model trained on specific patterns and may not catch all cheating methods<br>
-        • Use results as guidance, not absolute truth
-    </div>
-
-    <div class="technical-details">
-        <h3 class="section-title">🧠 Model Information</h3>
-
-        <div class="detail-item">
-            <span class="detail-label">Architecture:</span>
-            <span class="detail-value">Vision Transformer (ViT) with VideoMAE</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Model Size:</span>
-            <span class="detail-value">vit_giant_patch14_224 (~1B parameters)</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Input Processing:</span>
-            <span class="detail-value">16 frames @ 224x224 resolution</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Training Data:</span>
-            <span class="detail-value">CS2 gameplay clips (cheater vs legitimate)</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Model Path:</span>
-            <span class="detail-value" style="font-family: monospace; font-size: 12px;">{{ metadata.model_path }}</span>
-        </div>
-
-        <div class="detail-item">
-            <span class="detail-label">Analysis Time:</span>
-            <span class="detail-value">{{ metadata.evaluation_timestamp[:19].replace('T', ' ') }}</span>
-        </div>
-    </div>
-</body>
+  </body>
 </html>

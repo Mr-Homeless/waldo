@@ -4,65 +4,41 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Training Model - WALD01</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      #log-output {
-        height: 500px;
-        overflow-y: auto;
-        background-color: #1e1e1e;
-        color: #d4d4d4;
-        padding: 15px;
-        border-radius: 5px;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        white-space: pre-wrap;
-        word-wrap: break-word;
-      }
-      .progress {
-        height: 30px;
-      }
-      .spinner-border {
-        width: 1rem;
-        height: 1rem;
-      }
-      #status-message {
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <div class="container">
-      <h1 class="mt-5">Training Model</h1>
+    <div class="container mt-4">
+        <div class="card panel">
+            <div class="card-header">
+                <h1>Training Model</h1>
+            </div>
+            <div class="card-body">
+                <div id="status-message" class="mb-3">
+                    <div class="spinner-border text-primary mr-2" role="status"></div>
+                    <span>Initializing training process...</span>
+                </div>
 
-      <div class="card mt-4">
-        <div class="card-body">
-          <div id="status-message">
-            <span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span>
-            Initializing training process...
-          </div>
+                <div class="progress mb-3" style="display: none;" id="progress-container">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                         id="progress-bar"
+                         role="progressbar"
+                         style="width: 0%">0%</div>
+                </div>
 
-          <div class="progress mb-3" style="display: none;" id="progress-container">
-            <div class="progress-bar progress-bar-striped progress-bar-animated"
-                 id="progress-bar"
-                 role="progressbar"
-                 style="width: 0%">0%</div>
-          </div>
+                <div id="log-output" class="log-container">Waiting for training to start...</div>
 
-          <div id="log-output">Waiting for training to start...</div>
-
-          <div class="mt-3">
-            <button class="btn btn-secondary" onclick="window.location.href='/'">
-              Back to Home
-            </button>
-            <button class="btn btn-danger ms-2" id="stop-button" style="display: none;">
-              Stop Training
-            </button>
-          </div>
+                <div class="mt-3">
+                    <a href="/" class="btn btn-secondary squishy">Back to Home</a>
+                    <button class="btn btn-danger squishy ml-2" id="stop-button" style="display: none;">
+                        Stop Training
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
+    
     <script>
       const processId = '{{ process_id }}';
       let eventSource = null;
@@ -95,7 +71,7 @@
 
       function updateStatus(message) {
         const statusDiv = document.getElementById('status-message');
-        statusDiv.innerHTML = `<span class="spinner-border text-primary me-2" role="status" aria-hidden="true"></span> ${message}`;
+        statusDiv.innerHTML = `<div class="spinner-border text-primary mr-2" role="status"></div> <span>${message}</span>`;
       }
 
       function completeTraining(success = true) {
