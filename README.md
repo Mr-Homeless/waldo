@@ -82,10 +82,10 @@ echo ""
 echo "✅ Installation complete!"
 echo ""
 read -p "Would you like to start the server now? (y/n): " -n 1 -r
+chmod +x run.sh
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "🌐 Starting server on http://localhost:5000"
-    chmod +x run.sh
     ./run.sh
 else
     echo "To start the server later, run: cd waldo&& ./run.sh"
