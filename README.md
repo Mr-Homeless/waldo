@@ -206,7 +206,7 @@ The system examines:
 
 ## 🛠️ Troubleshooting
 
-- After training a new model or fine tuning a model, it may give an error code, but if it ran through the Epocs and trained, it did complete and the errors are likely not crucial to functioning. 
+- After training a new model or fine tuning a model, it may give an error code, but if it ran through the epochs and trained, it did complete and the errors are likely not crucial to functioning. 
 
 - If running this on Windows, it will run slightly slower and sometimes look frozen/won't have output. This is normal right now.
 
